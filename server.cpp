@@ -12,10 +12,8 @@ public:
     kj::Promise<void> transferImage(TransferImageContext context) override
     {
         auto img = context.getParams().getImage();
-
         auto size = img.size();
 
-        // Process the image here (You can save it to file, display, etc.)
         std::cout << "Received image with size: " << size << " bytes\n";
         cv::Mat m(1, size, CV_8UC1, const_cast<void *>(static_cast<const void *>(img.begin())));
         cv::Mat receivedImage = cv::imdecode(m, cv::IMREAD_COLOR);
@@ -29,7 +27,6 @@ public:
         auto response = context.getResults(); //.initImage();
         auto imgBuilder = response.initImage(data.size());
         std::memcpy(imgBuilder.begin(), data.data(), data.size());
-        response.setImage(imgBuilder);
 
         return kj::READY_NOW;
     }

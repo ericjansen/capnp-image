@@ -57,19 +57,17 @@ int main() {
     std::cout << "Received image with size: " << response.size() << " bytes\n";
     cv::Mat m(1, response.size(), CV_8UC1, const_cast<void *>(static_cast<const void *>(response.begin())));
     cv::Mat receivedImage = cv::imdecode(m, cv::IMREAD_UNCHANGED);
-    if (!receivedImage.empty()) {
-        cv::imwrite("rec.jpg", receivedImage);
-    } else return 1;
-    /*std::ofstream wfile("received.jpg", std::ios::binary);
-    if (wfile.is_open()) {
-        //cv::imwrite("received_image.jpg", m);
-        wfile.write(reinterpret_cast<const char*>(response.begin()), response.size());
-        wfile.close();
-        std::cout << "saved to received_image.jpg\n";
-    } else {
-        std::cout << "Failed to save to received_image.jpg\n";
-        return 1;
-    }*/
+    if (receivedImage.empty()) {
+      std::cerr << "Failed to decode image\n";
+      return -1;
+    }
+
+    if (!cv::imwrite("rec.jpg", receivedImage)) {
+        std::cerr << "Failed to save image\n";
+        return -1;
+    } 
+
+    std::cout << "Image saved as rec.jpg\n";
     
     return 0;
 }
