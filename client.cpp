@@ -9,12 +9,14 @@
 #include <opencv2/imgproc.hpp>
 #include "image.capnp.h"
 
-int main() {
+int main(int argc,const char* argv[]) {
     auto io = kj::setupAsyncIo();
 
     auto &waitScope = io.waitScope;
     kj::Network &network = io.provider->getNetwork();
-    kj::Own<kj::NetworkAddress> addr = network.parseAddress("127.0.0.1:12000").wait(io.waitScope);
+    kj::Own<kj::NetworkAddress> addr = (argc != 2) ?
+      network.parseAddress("localhost:12345").wait(io.waitScope) :
+      network.parseAddress(argv[1]).wait(io.waitScope);
     kj::Own<kj::AsyncIoStream> conn = addr->connect().wait(io.waitScope);
 
     capnp::MallocMessageBuilder message;

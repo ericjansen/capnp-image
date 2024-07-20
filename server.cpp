@@ -32,11 +32,13 @@ public:
     }
 };
 
-int main()
+int main(int argc,const char* argv[])
 {
     auto io = kj::setupAsyncIo();
     kj::Network &network = io.provider->getNetwork();
-    kj::Own<kj::NetworkAddress> addr = network.parseAddress("127.0.0.1:12000").wait(io.waitScope);
+    kj::Own<kj::NetworkAddress> addr = (argc != 2) ?
+      network.parseAddress("localhost:12345").wait(io.waitScope) :
+      network.parseAddress(argv[1]).wait(io.waitScope);
     kj::Own<kj::ConnectionReceiver> listener = addr->listen();
 
     capnp::TwoPartyServer server(kj::heap<ImageTransferImpl>());
